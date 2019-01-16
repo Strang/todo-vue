@@ -13,13 +13,10 @@
       leave-active-class="animated fadeOutDown"
     >
       <todo-item
-        v-for="(todo, index) in todosFilterd"
+        v-for="todo in todosFilterd"
         :key="todo.id"
         :todo="todo"
-        :index="index"
         :checkAll="!anyRemaining"
-        @removedTodo="removeTodo"
-        @finishedEdit="finishedEdit"
       ></todo-item>
     </transition-group>
     <div class="extra-container">
@@ -76,7 +73,7 @@ export default {
     }
   },
   created() {
-    eventBus.$on("removedTodo", index => this.removeTodo(index))
+    eventBus.$on("removedTodo", id => this.removeTodo(id))
     eventBus.$on("finishedEdit", data => this.finishedEdit(data))
     eventBus.$on("checkAllChanged", checked => this.checkAllTodos(checked))
     eventBus.$on("filterChanged", filter => this.filter = filter)
@@ -123,7 +120,8 @@ export default {
       this.newTodo = ""
       this.idForTodo++
     },
-    removeTodo(index) {
+    removeTodo(id) {
+      const index = this.todos.findIndex((item) => item.id == id)
       this.todos.splice(index, 1)
     },
     checkAllTodos(checked) {
@@ -133,7 +131,8 @@ export default {
       this.todos = this.todos.filter(todo => !todo.completed)
     },
     finishedEdit: function(data) {
-      this.todos.splice(data.index, 1, data.todo)
+      const index = this.todos.findIndex((item) => item.id == data.id)
+      this.todos.splice(index, 1, data)
     }
   }
 }

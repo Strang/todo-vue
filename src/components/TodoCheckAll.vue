@@ -15,8 +15,8 @@ export default {
     }
   },
   methods: {
-      allChecked(checked) {
-          this.$store.state.todos.forEach(todo => (todo.completed = checked))
+      allChecked(event) {
+          this.$store.state.todos.forEach(todo => (todo.completed = event.target.checked))
       }
   }
 }

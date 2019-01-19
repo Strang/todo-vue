@@ -20,14 +20,14 @@
       ></todo-item>
     </transition-group>
     <div class="extra-container">
-      <todo-check-all :anyRemaining="anyRemaining"></todo-check-all>
-      <todo-remaining :remaining="remaining"></todo-remaining>
+      <todo-check-all></todo-check-all>
+      <todo-remaining></todo-remaining>
     </div>
     <div class="extra-container">
       <todo-filtered></todo-filtered>
       <div>
         <transition name="fade">
-          <todo-clear-completed :showClearCompletedButton="showClearCompletedButton"></todo-clear-completed>
+          <todo-clear-completed></todo-clear-completed>
         </transition>
       </div>
     </div>
@@ -54,57 +54,35 @@ export default {
     return {
       newTodo: "",
       idForTodo: 3,
-      beforeEditCache: "",
-      filter: "all",
-      todos: [
-        {
-          id: 1,
-          title: "Finish Vue Screencast",
-          completed: false,
-          editing: false
-        },
-        {
-          id: 2,
-          title: "Take over world",
-          completed: false,
-          editing: false
-        }
-      ]
+      beforeEditCache: ""
     }
   },
   created() {
-    eventBus.$on("removedTodo", id => this.removeTodo(id))
-    eventBus.$on("finishedEdit", data => this.finishedEdit(data))
-    eventBus.$on("checkAllChanged", checked => this.checkAllTodos(checked))
-    eventBus.$on("filterChanged", filter => this.filter = filter)
+    // eventBus.$on("removedTodo", id => this.removeTodo(id))
+    // eventBus.$on("finishedEdit", data => this.finishedEdit(data))
+    // eventBus.$on("checkAllChanged", checked => this.checkAllTodos(checked))
+    eventBus.$on("filterChanged", filter => this.$store.state.filter = filter)
     eventBus.$on("clearCompletedTodos", () => this.clearCompleted())
   },
   beforeDestroy() {
-    eventBus.$off("removedTodo", index => this.removeTodo(index))
-    eventBus.$off("finishedEdit", data => this.finishedEdit(data))
-    eventBus.$off("checkAllChanged", checked => this.checkAllTodos(checked))
-    eventBus.$off("filterChanged", filter => this.filter = filter)
+    // eventBus.$off("removedTodo", index => this.removeTodo(index))
+    // eventBus.$off("finishedEdit", data => this.finishedEdit(data))
+    // eventBus.$off("checkAllChanged", checked => this.checkAllTodos(checked))
+    eventBus.$off("filterChanged", filter => this.$store.state.filter = filter)
     eventBus.$off("clearCompletedTodos", () => this.clearCompleted())
   },
   computed: {
     remaining() {
-      return this.todos.filter(todo => !todo.completed).length
+      return this.$store.getters.remaining
     },
-    anyRemaining() {
-      return this.remaining !== 0
+    anyRemaining(state, getters) {
+      return this.$store.getters.anyRemaining
     },
     todosFilterd: function() {
-      if (this.filter === "all") {
-        return this.todos
-      } else if (this.filter === "active") {
-        return this.todos.filter(todo => !todo.completed)
-      } else if (this.filter === "completed") {
-        return this.todos.filter(todo => todo.completed)
-      }
-      return this.todos
+      return this.$store.getters.todosFilterd
     },
     showClearCompletedButton: function() {
-      return this.todos.filter(todo => todo.completed).length > 0
+      return this.$store.getters.showClearCompletedButton
     }
   },
   methods: {
@@ -112,7 +90,7 @@ export default {
       if (this.newTodo.trim().length === 0) {
         return
       }
-      this.todos.push({
+      this.$store.state.todos.push({
         id: this.idForTodo,
         title: this.newTodo,
         completed: false
@@ -120,19 +98,19 @@ export default {
       this.newTodo = ""
       this.idForTodo++
     },
-    removeTodo(id) {
-      const index = this.todos.findIndex((item) => item.id == id)
-      this.todos.splice(index, 1)
-    },
-    checkAllTodos(checked) {
-      this.todos.forEach(todo => (todo.completed = checked))
-    },
+    // removeTodo(id) {
+    //   const index = this.$store.state.todos.findIndex((item) => item.id == id)
+    //   this.$store.state.todos.splice(index, 1)
+    // },
+    // checkAllTodos(checked) {
+    //   this.$store.state.todos.forEach(todo => (todo.completed = checked))
+    // },
     clearCompleted: function() {
-      this.todos = this.todos.filter(todo => !todo.completed)
+      this.$store.state.todos = this.$store.state.todos.filter(todo => !todo.completed)
     },
     finishedEdit: function(data) {
-      const index = this.todos.findIndex((item) => item.id == data.id)
-      this.todos.splice(index, 1, data)
+      const index = this.$store.state.todos.findIndex((item) => item.id == data.id)
+      this.$store.state.todos.splice(index, 1, data)
     }
   }
 }

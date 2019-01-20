@@ -11,13 +11,13 @@ export default {
   name: "todo-check-all",
   computed: {
     anyRemaining() {
-      return this.$store.getters.anyRemaining
+      return this.$store.getters.anyRemaining;
     }
   },
   methods: {
-      allChecked(event) {
-          this.$store.state.todos.forEach(todo => (todo.completed = event.target.checked))
-      }
+    allChecked(event) {
+      this.$store.commit("checkAll", event.target.checked);
+    }
   }
-}
+};
 </script>

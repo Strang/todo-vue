@@ -11,13 +11,13 @@ export default {
   name: "todo-filtered",
   computed: {
     filter() {
-      return this.$store.state.filter
+      return this.$store.state.filter;
     }
   },
   methods: {
     changeFilter(filter) {
-      this.$store.state.filter = filter
+      this.$store.commit("updateFilter", filter);
     }
   }
-}
+};
 </script>

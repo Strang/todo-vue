@@ -53,17 +53,11 @@ export default {
     };
   },
   computed: {
-    remaining() {
-      return this.$store.getters.remaining;
-    },
     anyRemaining(state, getters) {
       return this.$store.getters.anyRemaining;
     },
     todosFilterd: function() {
       return this.$store.getters.todosFilterd;
-    },
-    showClearCompletedButton: function() {
-      return this.$store.getters.showClearCompletedButton;
     }
   },
   methods: {
@@ -71,12 +65,12 @@ export default {
       if (this.newTodo.trim().length === 0) {
         return;
       }
-      this.$store.dispatch('addTodo', {
+      this.$store.dispatch("addTodo", {
         id: this.idForTodo,
         title: this.newTodo,
         completed: false,
-        editing: false,
-      })
+        editing: false
+      });
       this.newTodo = "";
       this.idForTodo++;
     }

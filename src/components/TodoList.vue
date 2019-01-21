@@ -52,6 +52,9 @@ export default {
       beforeEditCache: ""
     };
   },
+  created() {
+    this.$store.dispatch('retrieveTodos')
+  },
   computed: {
     anyRemaining(state, getters) {
       return this.$store.getters.anyRemaining;

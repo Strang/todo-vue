@@ -1,25 +1,14 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import axios from "axios";
 
 Vue.use(Vuex);
+axios.defaults.baseURL = "http://localhost:8090/";
 
 export const store = new Vuex.Store({
   state: {
     filter: "all",
-    todos: [
-      {
-        id: 1,
-        title: "Finish Vue Screencast",
-        completed: false,
-        editing: false
-      },
-      {
-        id: 2,
-        title: "Take over world",
-        completed: false,
-        editing: false
-      }
-    ]
+    todos: []
   },
   getters: {
     remaining(state) {
@@ -72,38 +61,107 @@ export const store = new Vuex.Store({
         completed: todo.completed,
         editing: todo.editing
       });
+    },
+    retrieveTodos(state, todos) {
+      state.todos = todos;
     }
   },
   actions: {
+    retrieveTodos(context) {
+      axios
+        .get("/todo/all")
+        .then(({ data }) => {
+          const rsp = data;
+          if (rsp.status === 0) {
+            context.commit("retrieveTodos", rsp.data);
+          } else {
+            alert(rsp.data);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
     addTodo(context, todo) {
-      setTimeout(() => {
-        context.commit("addTodo", todo);
-      }, 1000);
+      axios
+        .post("/todo/add/" + todo.title)
+        .then(res => {
+          const rsp = res.data;
+          if (rsp.status === 0) {
+            context.commit("addTodo", rsp.data);
+          } else {
+            alert(rsp.data);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        });
     },
     updateFilter(context, filter) {
-      setTimeout(() => {
-        context.commit("updateFilter", filter);
-      }, 1000);
+      context.commit("updateFilter", filter);
     },
     clearCompleted(context) {
-      setTimeout(() => {
-        context.commit("clearCompleted");
-      }, 1000);
+      axios
+        .post("/todo/deleteCompleted")
+        .then(({ data }) => {
+          const rsp = data;
+          if (rsp.status === 0) {
+            context.commit("clearCompleted");
+          } else {
+            alert(rsp.data);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        });
     },
     checkAll(context, checked) {
-      setTimeout(() => {
-        context.commit("checkAll", checked);
-      }, 1000);
+      axios
+        .post("/todo/checkOrUncheckAll?checked=" + checked)
+        .then(({ data }) => {
+          const rsp = data;
+          if (rsp.status === 0) {
+            context.commit("checkAll", checked);
+          } else {
+            alert(rsp.data);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        });
     },
     deleteTodo(context, id) {
-      setTimeout(() => {
-        context.commit("deleteTodo", id);
-      }, 1000);
+      axios
+        .post("/todo/delete/" + id)
+        .then(({ data }) => {
+          const rsp = data;
+          if (rsp.status === 0) {
+            context.commit("deleteTodo", id);
+          } else {
+            alert(rsp.data);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        });
     },
     updateTodo(context, todo) {
-      setTimeout(() => {
-        context.commit("updateTodo", todo);
-      }, 1000);
+      axios
+        .post("/todo/update/" + todo.id, {
+          completed: todo.completed,
+          title: todo.title
+        })
+        .then(({ data }) => {
+          const rsp = data;
+          if (rsp.status === 0) {
+            context.commit("updateTodo", rsp.data);
+          } else {
+            alert(rsp.data);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        });
     }
   }
 });
